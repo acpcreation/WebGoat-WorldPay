@@ -9,6 +9,16 @@ on:
     push:
         branches:
             - main
+    workflow_dispatch:
+
+env:
+  SonatypeUrl: 'https://iq.aplattel.ngrok.io/'
+  SonatypeAppId: WebGoat-WorldPay
+  SonatypeStage: 'build' 
+  SonatypeScanTarget: '.'
+  SONATYPE_USER: 'admin'
+  SONATYPE_PASSWORD: 'admin!23'
+  
 
 jobs:
     build:
@@ -16,7 +26,8 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                os: [ windows-latest, ubuntu-latest, macos-13 ]
+                os: [ubuntu-latest]
+                # os: [ windows-latest, ubuntu-latest, macos-13 ]
             max-parallel: 1
         steps:
             -   uses: actions/checkout@v4.1.6
@@ -34,3 +45,27 @@ jobs:
                     restore-keys: ${{ runner.os }}-m2-
             -   name: Build with Maven
                 run: mvn --no-transfer-progress verify
+
+            - name: Sonatype Lifecycle SCA Scan
+              id: evaluate
+              uses: sonatype/actions/evaluate@v1
+              with:
+                iq-server-url: ${{ env.SonatypeUrl }}
+                username: ${{ env.SONATYPE_USER }}
+                password: ${{ env.SONATYPE_PASSWORD }}
+                application-id: ${{ env.SonatypeAppId }}
+                stage: ${{ env.SonatypeStage }}
+                scan-targets: ${{ env.SonatypeScanTarget }}
+        
+            # - name: Retrieve Sonatype SBOM (SPDX)
+            #   uses: sonatype/actions/fetch-sbom@v1
+            #   if: ( success() || failure() ) && steps.evaluate.outputs.scan-id
+            #   with:
+            #     iq-server-url: ${{ env.SonatypeUrl }}
+            #     username: ${{ secrets.SONATYPE_USER }}
+            #     password: ${{ secrets.SONATYPE_PASSWORD }}
+            #     application-id: ${{ env.SonatypeAppId }}
+            #     scan-id: ${{ steps.evaluate.outputs.scan-id }}
+            #     sbom-standard: spdx
+            #     sbom-version: 2.3
+            #     artifact-name: ${{ env.SonatypeAppId }}-${{ env.SonatypeStage }}-sbom
