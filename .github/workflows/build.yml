@@ -12,12 +12,12 @@ on:
     workflow_dispatch:
 
 env:
-  SonatypeUrl: 'https://iq.aplattel.ngrok.io/'
-  SonatypeAppId: WebGoat-WorldPay
+  SonatypeUrl: 'https://kxo2vif9dm-nxiq.sonatype-se.com/'
+  SonatypeAppId: WebGoat-WorldPay__acpcreation
   SonatypeStage: 'build' 
   SonatypeScanTarget: '.'
-  SONATYPE_USER: 'admin'
-  SONATYPE_PASSWORD: 'admin!23'
+  SONATYPE_USER: 'zzc6QU3e'
+  SONATYPE_PASSWORD: 'DtKeXrkbVlX4z878UopHCeaqGyCbGckBZntNoHRum4nQ'
   
 
 jobs:
